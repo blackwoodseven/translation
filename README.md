@@ -28,3 +28,4 @@ $app['formatter.date']($date, 'my_date_format');
 ```
 {% mydate|formatDate('my_date_format') %}
 ```
+
