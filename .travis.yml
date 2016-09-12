@@ -2,4 +2,6 @@ language: php
 php:
   - '7.0'
 
-install: composer install
+install:
+  - composer global require "hirak/prestissimo:^0.3"
+  - composer install
