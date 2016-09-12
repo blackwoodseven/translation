@@ -1,0 +1,8 @@
+msgid "Sep"
+msgstr "Sep - localized"
+
+msgid "This should be translated"
+msgstr "This is now translated"
+
+msgid "date_format.medium_date"
+msgstr "j M Y"
