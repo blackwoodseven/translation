@@ -37,11 +37,33 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
         $text = $this->app['formatter.date']($date, 'medium_date');
         $this->assertEquals('8 Sep - localized 2016', $text);
 
+        $number = 1234.56;
+        $text = $this->app['formatter.number']($number, 4);
+        $this->assertEquals('1&234#5600', $text);
+
+        $number = 1234.5612;
+        $text = $this->app['formatter.number']($number, 2);
+        $this->assertEquals('1&234#56', $text);
+
+        $number = 1234.5678;
+        $text = $this->app['formatter.number']($number, 2);
+        $this->assertEquals('1&234#57', $text);
+
+        $number = 7890.1234;
+        $text = $this->app['formatter.price']($number);
+        $this->assertEquals('7&890#12', $text);
+
+        $number = 7890.1299;
+        $text = $this->app['formatter.price']($number);
+        $this->assertEquals('7&890#13', $text);
     }
+
     public function testLocaleInTemplates()
     {
         $approval = [
             'datetime' => new \DateTime('2016-09-08 22:29'),
+            'number' => 1234.56,
+            'price' => 7890.1299,
         ];
         $this->assertEquals('en', $this->app['locale']);
         $this->app['translator']->setLocale('test');
@@ -49,6 +71,8 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
         $html = $this->app['twig']->render('test.twig', $approval);
         $this->assertContains('This is now translated', $html);
         $this->assertContains('This should not be translated', $html);
-        $this->assertContains('8 Sep - localized 2016', $html);
+        $this->assertContains('Time is: 8 Sep - localized 2016', $html);
+        $this->assertContains('Number is: 1&234#5600', $html);
+        $this->assertContains('Price is: 7&890#13', $html);
     }
 }

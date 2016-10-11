@@ -21,7 +21,8 @@ class TranslationServiceProvider implements ServiceProviderInterface
         $app['translation.locales'] = [];
         $app['translation.locales_exclude'] = ['test'];
 
-        $app['translation.context.date_format'] = $app['translation.context.date_format'] ?? 'date_format';
+        $app['translation.context.date_format'] = 'date_format';
+        $app['translation.context.number_format'] = 'number_format';
         $app['encoding'] = $app['encoding'] ?? 'UTF-8';
 
         // Auto-discovery of .po files.
@@ -53,6 +54,12 @@ class TranslationServiceProvider implements ServiceProviderInterface
             return $translator;
         }));
 
+        $this->registerFormatters($app);
+        $this->registerTwigFilters($app);
+    }
+
+    public function registerFormatters($app)
+    {
         $app['formatter.date'] = $app->protect(function ($date, $formatType = null, $timezone = null) use ($app) {
             /**
              * Converts a date according to a format.
@@ -96,6 +103,30 @@ class TranslationServiceProvider implements ServiceProviderInterface
 
             return $result;
         });
+
+        $app['formatter.number'] = $app->protect(function ($v, $decimals = 0) use ($app) {
+            if (!is_numeric($v)) {
+                return $v;
+            }
+
+            $dec_point = $app['translator']->trans($app['translation.context.number_format'] . '.dec_point');
+            $thousands_sep = $app['translator']->trans($app['translation.context.number_format'] . '.thousands_sep');
+            $formatted = number_format($v, abs($decimals), $dec_point, $thousands_sep);
+            // Negative $decimals means *maximum* number of decimals.
+            if ($decimals < 0) {
+                $formatted = rtrim(rtrim($formatted, '0'), $dec_point);
+            }
+            return $formatted;
+        });
+
+        $app['formatter.price'] = $app->protect(function ($v) use ($app) {
+            return is_float($v) ? $app['formatter.number']($v, 2) : $v;
+        });
+
+    }
+
+    protected function registerTwigFilters($app)
+    {
         /**
          * Extends Twig with date translation filter.
          */
@@ -122,6 +153,20 @@ class TranslationServiceProvider implements ServiceProviderInterface
                 new \Twig_SimpleFilter(
                     'formatDate',
                     $app['formatter.date']
+                )
+            );
+
+            $twig->addFilter(
+                new \Twig_SimpleFilter(
+                    'formatNumber',
+                    $app['formatter.number']
+                )
+            );
+
+            $twig->addFilter(
+                new \Twig_SimpleFilter(
+                    'formatPrice',
+                    $app['formatter.price']
                 )
             );
 

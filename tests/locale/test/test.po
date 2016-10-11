@@ -6,3 +6,9 @@ msgstr "This is now translated"
 
 msgid "date_format.medium_date"
 msgstr "j M Y"
+
+msgid "number_format.dec_point"
+msgstr "#"
+
+msgid "number_format.thousands_sep"
+msgstr "&"
