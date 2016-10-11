@@ -51,6 +51,10 @@ class TranslationServiceProvider implements ServiceProviderInterface
                     }
                 }
             }
+            $app['translation.locales'] = array_merge(['builtin-fallback'], $app['translation.locales']);
+            $translator->setFallbackLocales(array_merge(['builtin-fallback'], $app['locale_fallbacks']));
+            $translator->addResource('po', __DIR__ . '/../locale/builtin-fallback.po', 'builtin-fallback');
+
             return $translator;
         }));
 

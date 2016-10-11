@@ -75,4 +75,13 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('Number is: 1&234#5600', $html);
         $this->assertContains('Price is: 7&890#13', $html);
     }
+
+    public function testLocaleFallback()
+    {
+        $this->app['translator']->setLocale('non-existant');
+        $number = 1234.5612;
+        $text = $this->app['formatter.number']($number, 2);
+        $this->assertEquals('1,234.56', $text);
+    }
+
 }
