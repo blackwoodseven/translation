@@ -25,17 +25,36 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testLocaleInCode()
+    public function testLocaleSwitching()
+    {
+        $this->assertEquals('en', $this->app['translator']->getLocale());
+        $this->app['translator']->setLocale('test');
+        $this->assertEquals('test', $this->app['translator']->getLocale());
+    }
+
+    public function testLocaleTranslation()
     {
         $this->app['translator']->setLocale('test');
+
         $text = $this->app['translator']->trans('This should be translated');
         $this->assertEquals('This is now translated', $text);
         $text = $this->app['translator']->trans('This should not be translated');
         $this->assertEquals('This should not be translated', $text);
+    }
+
+
+    public function testLocaleDateFormatting()
+    {
+        $this->app['translator']->setLocale('test');
 
         $date = new \DateTime('2016-09-08 22:29');
         $text = $this->app['formatter.date']($date, 'medium_date');
         $this->assertEquals('8 Sep - localized 2016', $text);
+    }
+
+    public function testLocaleNumberFormatting()
+    {
+        $this->app['translator']->setLocale('test');
 
         $number = 1234.56;
         $text = $this->app['formatter.number']($number, 4);
@@ -49,6 +68,19 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
         $text = $this->app['formatter.number']($number, 2);
         $this->assertEquals('1&234#57', $text);
 
+        $number = "1234.5678";
+        $text = $this->app['formatter.number']($number, 2);
+        $this->assertEquals('1&234#57', $text);
+
+        $number = "NaN";
+        $text = $this->app['formatter.number']($number, 2);
+        $this->assertEquals('NaN', $text);
+    }
+
+    public function testLocalePriceFormatting()
+    {
+        $this->app['translator']->setLocale('test');
+
         $number = 7890.1234;
         $text = $this->app['formatter.price']($number);
         $this->assertEquals('7&890#12', $text);
@@ -56,6 +88,14 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
         $number = 7890.1299;
         $text = $this->app['formatter.price']($number);
         $this->assertEquals('7&890#13', $text);
+
+        $number = "7890.1299";
+        $text = $this->app['formatter.price']($number);
+        $this->assertEquals("7890.1299", $text);
+
+        $number = "NaN";
+        $text = $this->app['formatter.price']($number);
+        $this->assertEquals('NaN', $text);
     }
 
     public function testLocaleInTemplates()
