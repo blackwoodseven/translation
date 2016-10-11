@@ -1,0 +1,5 @@
+msgid "number_format.dec_point"
+msgstr "."
+
+msgid "number_format.thousands_sep"
+msgstr ","
