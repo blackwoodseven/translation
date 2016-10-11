@@ -65,9 +65,9 @@ class TranslationTest extends \PHPUnit_Framework_TestCase
             'number' => 1234.56,
             'price' => 7890.1299,
         ];
-        $this->assertEquals('en', $this->app['locale']);
+        $this->assertEquals('en', $this->app['translator']->getLocale());
         $this->app['translator']->setLocale('test');
-        $this->assertEquals('test', $this->app['locale']);
+        $this->assertEquals('test', $this->app['translator']->getLocale());
         $html = $this->app['twig']->render('test.twig', $approval);
         $this->assertContains('This is now translated', $html);
         $this->assertContains('This should not be translated', $html);

@@ -2,9 +2,9 @@
 
 namespace BlackwoodSeven\Translation;
 
-use Silex\Application;
+use Pimple\Container;
 use Silex\Translator;
-use Silex\ServiceProviderInterface;
+use Pimple\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 
@@ -13,7 +13,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function register(Application $app)
+    public function register(Container $app)
     {
         // Set default options.
         $app['translation.path'] = [];
@@ -26,7 +26,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
         $app['encoding'] = $app['encoding'] ?? 'UTF-8';
 
         // Auto-discovery of .po files.
-        $app['translator'] = $app->share($app->extend('translator', function($translator, $app) {
+        $app['translator'] = $app->extend('translator', function($translator, $app) {
             $translator->addLoader('po', new PoFileLoader());
             $paths = $app['translation.path'];
             if (!is_array($paths)) {
@@ -52,7 +52,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
                 }
             }
             return $translator;
-        }));
+        });
 
         $this->registerFormatters($app);
         $this->registerTwigFilters($app);
@@ -130,7 +130,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
         /**
          * Extends Twig with date translation filter.
          */
-        $app['twig'] = $app->share($app->extend('twig', function (\Twig_Environment $twig) use ($app) {
+        $app['twig'] = $app->extend('twig', function (\Twig_Environment $twig) use ($app) {
             /**
              * Adds the `formatDate` filter.
              *
@@ -171,7 +171,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
             );
 
             return $twig;
-        }));
+        });
     }
 
     /**
