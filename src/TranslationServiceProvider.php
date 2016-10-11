@@ -115,7 +115,7 @@ class TranslationServiceProvider implements ServiceProviderInterface
 
             $dec_point = $app['translator']->trans($app['translation.context.number_format'] . '.dec_point');
             $thousands_sep = $app['translator']->trans($app['translation.context.number_format'] . '.thousands_sep');
-            $formatted = number_format($v, abs($decimals), $dec_point, $thousands_sep);
+            $formatted = number_format((float) $v, abs($decimals), $dec_point, $thousands_sep);
             // Negative $decimals means *maximum* number of decimals.
             if ($decimals < 0) {
                 $formatted = rtrim(rtrim($formatted, '0'), $dec_point);
